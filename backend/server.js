@@ -44,6 +44,10 @@ app.get("/", (req, res) => {
     res.send("Backend running");
 });
 
+app.get("/api/test", (req, res) => {
+    res.send("API is working");
+});
+
 app.post("/register", async (req, res) => {
     try {
         const { name, clubName, position, phone, email } = req.body;

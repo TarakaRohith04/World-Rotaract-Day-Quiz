@@ -15,7 +15,7 @@ function AdminDashboard() {
             return;
         }
 
-        fetch('http://localhost:5000/api/attempts')
+        fetch("https://world-rotaract-quiz-backend.onrender.com/api/attempts")
             .then(res => res.json())
             .then(data => setAttempts(data))
             .catch(err => console.error('Error fetching data:', err));

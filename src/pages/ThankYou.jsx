@@ -41,7 +41,7 @@ function ThankYou() {
                 localStorage.setItem('abhyasamCompletedAttempts', JSON.stringify(completedAttempts));
 
                 // Push to backend
-                fetch('http://localhost:5000/api/attempts', {
+                fetch("https://world-rotaract-quiz-backend.onrender.com/api/attempts", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(attemptData)

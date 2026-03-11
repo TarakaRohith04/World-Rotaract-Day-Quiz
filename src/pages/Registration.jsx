@@ -39,25 +39,6 @@ function Registration() {
         }
 
         try {
-
-            // 🔹 SEND DATA TO BACKEND
-            await fetch(
-                "https://world-rotaract-day-quiz.onrender.com/api/attempts",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        name: formData.name,
-                        club: formData.club,
-                        position: formData.position,
-                        whatsapp: formData.whatsapp,
-                        gmail: formData.gmail
-                    })
-                }
-            );
-
             // 🔹 STORE USER LOCALLY FOR QUIZ FLOW
             localStorage.setItem('abhyasamUser', JSON.stringify(formData));
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 function Registration() {
     const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         name: '',
         club: '',
@@ -13,19 +14,20 @@ function Registration() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+
         setFormData(prev => ({
             ...prev,
             [name]: value
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Retrieve historically completed attempts
-        const completedAttempts = JSON.parse(localStorage.getItem('abhyasamCompletedAttempts') || '[]');
+        const completedAttempts = JSON.parse(
+            localStorage.getItem('abhyasamCompletedAttempts') || '[]'
+        );
 
-        // Check if current user has already attempted using WhatsApp OR Gmail as primary keys
         const hasAttempted = completedAttempts.some(attempt =>
             attempt.whatsapp === formData.whatsapp ||
             attempt.gmail.toLowerCase() === formData.gmail.toLowerCase()
@@ -33,24 +35,54 @@ function Registration() {
 
         if (hasAttempted) {
             alert("You have already attempted this quiz. Only one attempt is allowed per user.");
-            return; // Block entry
+            return;
         }
 
-        // Simply save current active user to localStorage to show real interaction flow
-        localStorage.setItem('abhyasamUser', JSON.stringify(formData));
-        navigate('/quiz');
+        try {
+
+            // 🔹 SEND DATA TO BACKEND
+            await fetch(
+                "https://world-rotaract-day-quiz.onrender.com/api/attempts",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        name: formData.name,
+                        club: formData.club,
+                        position: formData.position,
+                        whatsapp: formData.whatsapp,
+                        gmail: formData.gmail
+                    })
+                }
+            );
+
+            // 🔹 STORE USER LOCALLY FOR QUIZ FLOW
+            localStorage.setItem('abhyasamUser', JSON.stringify(formData));
+
+            // 🔹 MOVE TO QUIZ
+            navigate('/quiz');
+
+        } catch (error) {
+            console.error("Registration Error:", error);
+            alert("Failed to register. Please try again.");
+        }
     };
 
     return (
         <div className="glass-panel" style={{ maxWidth: '500px' }}>
             <h2>Participant Details</h2>
+
             <p style={{ textAlign: 'center', marginBottom: '2rem' }}>
                 Please fill out this form to start the quiz.
             </p>
 
             <form onSubmit={handleSubmit}>
+
                 <div className="form-group">
                     <label className="form-label">Name of the Rotaractor</label>
+
                     <input
                         type="text"
                         name="name"
@@ -64,6 +96,7 @@ function Registration() {
 
                 <div className="form-group">
                     <label className="form-label">Name of the Club</label>
+
                     <input
                         type="text"
                         name="club"
@@ -77,6 +110,7 @@ function Registration() {
 
                 <div className="form-group">
                     <label className="form-label">Position / Designation</label>
+
                     <input
                         type="text"
                         name="position"
@@ -90,6 +124,7 @@ function Registration() {
 
                 <div className="form-group">
                     <label className="form-label">WhatsApp Number</label>
+
                     <input
                         type="tel"
                         name="whatsapp"
@@ -103,6 +138,7 @@ function Registration() {
 
                 <div className="form-group">
                     <label className="form-label">Gmail</label>
+
                     <input
                         type="email"
                         name="gmail"
@@ -119,6 +155,7 @@ function Registration() {
                         Enter Quiz
                     </button>
                 </div>
+
             </form>
         </div>
     );

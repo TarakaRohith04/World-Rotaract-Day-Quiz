@@ -98,27 +98,58 @@ function Quiz() {
         }
     };
 
-    const handleSubmit = (isCheating = false) => {
-        // Calculate score by comparing user selected option index with the new tracked answer index
-        let score = 0;
-        questions.forEach(q => {
-            if (answers[q.id] === q.answer) {
-                score += 1;
-            }
-        });
+    const handleSubmit = async (isCheating = false) => {
 
-        // Pass score, cheating flag, raw answers, and the specific shuffled questions to the thank you page via routing state
-        navigate('/thank-you', {
-            state: {
-                score: score,
-                total: questions.length,
-                cheated: isCheating,
-                questions: questions,
-                answers: answers
-            }
-        });
+    let score = 0;
+
+    questions.forEach(q => {
+        if (answers[q.id] === q.answer) {
+            score += 1;
+        }
+    });
+
+    const user = JSON.parse(localStorage.getItem("abhyasamUser"));
+
+    const payload = {
+        name: user.name,
+        club: user.club,
+        position: user.position,
+        whatsapp: user.whatsapp,
+        gmail: user.gmail,
+        score: score,
+        total: questions.length,
+        cheated: isCheating,
+        questions: questions,
+        answers: answers
     };
 
+    try {
+
+        await fetch(
+            "https://world-rotaract-day-quiz.onrender.com/api/attempts",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            }
+        );
+
+    } catch (error) {
+        console.error("Error saving attempt:", error);
+    }
+
+    navigate('/thank-you', {
+        state: {
+            score: score,
+            total: questions.length,
+            cheated: isCheating,
+            questions: questions,
+            answers: answers
+        }
+    });
+};
     // Get current page questions
     const startIndex = (currentPage - 1) * QUESTIONS_PER_PAGE;
     const currentQuestions = questions.slice(startIndex, startIndex + QUESTIONS_PER_PAGE);

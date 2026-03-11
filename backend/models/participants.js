@@ -4,7 +4,7 @@ const ParticipantSchema = new mongoose.Schema({
     name: { type: String, required: true },
     club: { type: String, required: true },
     position: { type: String, required: true },
-    whatsapp: { type: String, required: true },
+    whatsapp: { type: String, required: true, unique: true },
     gmail: { type: String, required: true },
     score: { type: Number, default: 0 },
     total: { type: Number, default: 50 },
